@@ -1,7 +1,7 @@
 from .base_views import *
 
-class SignUpView(View):
 
+class SignUpView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -51,7 +51,7 @@ class SignUpView(View):
                 mobile_number=mobile_number,
                 full_name=full_name,
                 username=username,
-                password=password
+                password=bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             )
             return JsonResponse({"message": "CREATE"}, status=201)
 

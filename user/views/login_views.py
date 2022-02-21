@@ -20,18 +20,20 @@ class LogInView(View):
                     Q(mobile_number=login_id) |
                     Q(username=login_id)
             ).exists():
-                return JsonResponse({"message": "INVALID_ERROR"}, status=401)
+                return JsonResponse({"message": "INVALID_USER"}, status=401)
             # 비밀번호가 틀린 경우
             user = User.objects.get(
                 Q(email=login_id) |
                 Q(mobile_number=login_id) |
                 Q(username=login_id)
             )
-            if password != user.password:
-                return JsonResponse({"message": "INVALID_ERROR"}, status=401)
+            if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+                return JsonResponse({"message": "INVALID_PASSWORD"}, status=401)
+
+            access_token = jwt.encode({"id": user.id}, SECRET, algorithm=ALGORITHM)
 
             # SUCCESS:성공
-            return JsonResponse({"message": "SECCESS"}, status=200)
+            return JsonResponse({"message": "SECCESS", "Authorization": access_token}, status=200)
 
         except JSONDecodeError:
             return JsonResponse({"message: JSONDecodeError"}, status=400)
