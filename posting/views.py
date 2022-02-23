@@ -6,19 +6,21 @@ from django.views import View
 
 from .models import Posting, Image
 from user.models import User
+from user.utils import login_decorator
 
 
 class PostingView(View):
+    @login_decorator
     def post(self, request):
         try:
             data = json.loads(request.body)
 
-            user = User.objects.get(username=data.get('user', None))
+            user = request.user
             content = data.get('content', '')
             image_url_list = data.get('image_url', None)
 
             # KEYERROR
-            if (user and image_url_list) is None:
+            if image_url_list is None:
                 return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
             # CREATED
