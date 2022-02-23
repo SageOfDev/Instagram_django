@@ -10,7 +10,7 @@ class LogInView(View):
             password = data.get("password", None)
 
             # KEY ERROR: 필수 정보 누락
-            if not (login_id and password):
+            if (login_id and password) is None:
                 return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
             # INVALID_ERROR
@@ -32,8 +32,8 @@ class LogInView(View):
 
             access_token = jwt.encode({"id": user.id}, SECRET, algorithm=ALGORITHM)
 
-            # SUCCESS:성공
-            return JsonResponse({"message": "SECCESS", "Authorization": access_token}, status=200)
+            # OK:성공
+            return JsonResponse({"message": "OK", "Authorization": access_token}, status=200)
 
         except JSONDecodeError:
             return JsonResponse({"message: JSONDecodeError"}, status=400)

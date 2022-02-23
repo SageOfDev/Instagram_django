@@ -17,12 +17,12 @@ class SignUpView(View):
             username_pattern = re.compile(r"^(?=.*[a-z])[a-z0-9_.]+$")
 
             # KEY ERROR: 필수 입력 누락
-            if not (
+            if (
                     (email or mobile_number)
                 and full_name
                 and username
                 and password
-            ):
+            ) is None:
                 return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
             # VALIDATION_ERROR: 패턴과 안맞는 경우
@@ -45,7 +45,7 @@ class SignUpView(View):
             ).exists():
                 return JsonResponse({"message": "ALREADY_EXISTS"}, status=409)
 
-            # CREATE
+            # CREATED
             User.objects.create(
                 email=email,
                 mobile_number=mobile_number,
@@ -53,7 +53,7 @@ class SignUpView(View):
                 username=username,
                 password=bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             )
-            return JsonResponse({"message": "CREATE"}, status=201)
+            return JsonResponse({"message": "CREATED"}, status=201)
 
         except JSONDecodeError:
             return JsonResponse({"message": "JSON_DECODE_ERROR"}, status=400)
