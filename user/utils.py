@@ -13,11 +13,11 @@ def login_decorator(func):
             payload = jwt.decode(access_toekn, SECRET, algorithm=ALGORITHM)
             request.user = User.objects.get(id=payload["id"])
 
-
         except jwt.DecodeError:
-            return JsonResponse({"message": "INVALID_TOEKN"}, status=401)
+            return JsonResponse({"message": "INVALID_TOKEN"}, status=401)
+
         except User.DoesNotExist:
-            return JsonResponse({"message": "INVALID_USER"}, status=401)
+            return JsonResponse({"message": "USER_DOES_NOT_EXIST"}, status=404)
 
         return func(self, request, *args, **kwargs)
 

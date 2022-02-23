@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import PostingView, PostingSearchView
+from posting.views import posting_views, comment_views
 
 urlpatterns = [
-    path('', PostingView.as_view()),
-    path('search/<int:user_id>', PostingSearchView.as_view()),
+    path('', posting_views.PostingView.as_view()),
+    path('search/<int:user_id>', posting_views.PostingSearchView.as_view()),
+    path('comment', comment_views.CommentView.as_view()),
+    path('comment/search/<int:posting_id>', comment_views.CommentSearchView.as_view()),
 ]

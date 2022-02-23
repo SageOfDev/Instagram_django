@@ -1,12 +1,6 @@
-import json
-from json.decoder import JSONDecodeError
+from .base_views import *
 
-from django.http import JsonResponse
-from django.views import View
-
-from .models import Posting, Image
-from user.models import User
-from user.utils import login_decorator
+from posting.models import Image
 
 
 class PostingView(View):
