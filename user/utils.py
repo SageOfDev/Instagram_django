@@ -22,10 +22,3 @@ def login_decorator(func):
         return func(self, request, *args, **kwargs)
 
     return wrapper
-
-'''
- access_token = jwt.encode({"id": user.id}, SECRET, algorithm=ALGORITHM)
-
-        # OK:성공
-        return JsonResponse({"message": "OK", "Authorization": access_token}, status=200)
-'''

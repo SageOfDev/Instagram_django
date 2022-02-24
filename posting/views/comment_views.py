@@ -17,13 +17,15 @@ class CommentView(View):
             if (posting_id and content) is None:
                 return JsonResponse({"message": "KEY_ERROR"}, staus=400)
 
-            # INVALID_ERROR:
-            if not Posting.objects.filter(id=posting_id).exists():
+            # DOES_NOT_EXIST
+            try:
+                posting = Posting.objects.get(id=posting_id)
+            except Posting.DoesNotExist:
                 return JsonResponse({"message": "POSTING_DOES_NOT_EXIST"}, status=404)
 
             Comment.objects.create(
                 user=user,
-                posting=Posting.objects.get(id=posting_id),
+                posting=posting,
                 content=content
             )
 
