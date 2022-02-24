@@ -47,3 +47,20 @@ class CommentSearchView(View):
         } for comment in Comment.objects.filter(posting_id=posting_id)]
 
         return JsonResponse({"data": comment_list}, status=200)
+
+
+class CommentDetailView(View):
+    @login_decorator
+    def delete(self, request, comment_id):
+        # DOES_NOT_EXIST
+        try:
+            comment = Comment.objects.get(id=comment_id)
+        except Comment.DoesNotExist:
+            return JsonResponse({"message": "COMMENT_DOES_NOT_EXSIT"}, status=404)
+
+        # FORBIDDEN
+        if request.user.id != comment.user_id:
+            return JsonResponse({"message": "FORBIDDEN"}, status=403)
+
+        comment.delete()
+        return JsonResponse({"message": "DELETE"}, status=200)

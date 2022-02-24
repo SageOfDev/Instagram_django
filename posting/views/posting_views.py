@@ -13,7 +13,7 @@ class PostingView(View):
             content = data.get('content', '')
             image_url_list = data.get('image_url', None)
 
-            # KEYERROR
+            # KEY_ERROR
             if image_url_list is None:
                 return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
@@ -59,3 +59,54 @@ class PostingSearchView(View):
         ]
 
         return JsonResponse({"data": posting_list}, status=200)
+
+
+class PostingDetailView(View):
+    @login_decorator
+    def delte(self, request, posting_id):
+        # DOES_NOT_EXIST
+        try:
+            posting = Posting.objects.get(id=posting_id)
+        except Posting.DoesNotExist:
+            return JsonResponse({"message": "POSTING_DOES_NOT_EXIST"}, status=404)
+
+        # FORBIDDEN
+        if request.user.id != posting.user_id:
+            return JsonResponse({"mesasge": "FORBIDDEN"}, status=403)
+
+        posting.delete()
+        return JsonResponse({"message": "DELETE"}, status=200)
+
+    @login_decorator
+    def put(self, request, posting_id):
+        try:
+            data = json.loads(request.body)
+
+            # DOES_NOT_EXIST
+            try:
+                posting = Posting.objects.get(id=posting_id)
+            except Posting.DoesNotExist:
+                return JsonResponse({"message": "POSTING_DOES_NOT_EXIST"}, status=404)
+
+            # FORBIDDEN
+            if request.user.id != posting.user_id:
+                return JsonResponse({"mesasge": "FORBIDDEN"}, status=403)
+
+            posting.content = data.get("content", posting.content)
+            posting.save()
+
+            old_image_url_list = [image.image_url for image in Image.objects.filter(posting_id=posting_id)]
+            image_url_list = data.get("image_url", old_image_url_list)
+
+            # KEY_ERROR
+            if image_url_list is None:
+                return JsonResponse({"message": "KEY_ERROR"}, status=400)
+
+            if image_url_list != old_image_url_list:
+                for image_url in set(old_image_url_list) - set(image_url_list):
+                    Image.objects.get(image_url=image_url, posting_id=posting_id).delete()
+            return JsonResponse({"message": "MODIFIED"}, status=200)
+
+        except JSONDecodeError:
+            return JsonResponse({"message": "JSON_DECODE_ERROR"}, status=400)
+
