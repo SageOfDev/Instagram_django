@@ -12,6 +12,7 @@ class CommentView(View):
             user = request.user
             posting_id = data.get("posting_id", None)
             content = data.get("content", None)
+            parrent_comment_id = data.get("parent_comment_id", None)
 
             # KEY_ERROR
             if (posting_id and content) is None:
@@ -20,13 +21,17 @@ class CommentView(View):
             # DOES_NOT_EXIST
             try:
                 posting = Posting.objects.get(id=posting_id)
+                parent_comment = Comment.objects.get(id=parrent_comment_id)
+            except Comment.DoesNotExist:
+                return JsonResponse({"message": "COMMENT_DOES_NOT_EXIST"}, status=404)
             except Posting.DoesNotExist:
                 return JsonResponse({"message": "POSTING_DOES_NOT_EXIST"}, status=404)
 
             Comment.objects.create(
                 user=user,
                 posting=posting,
-                content=content
+                content=content,
+                parent_comment=parent_comment
             )
 
             return JsonResponse({"message": "CREATED"}, status=201)
