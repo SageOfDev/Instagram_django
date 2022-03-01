@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 from pathlib import Path
-
 import json
 
 from django.core.exceptions import ImproperlyConfigured
@@ -94,9 +93,7 @@ WSGI_APPLICATION = 'Instagram_clone.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-import my_settings
-
-DATABASES = my_settings.DATABASES
+DATABASES = get_secret("DATABASES")
 
 
 # Password validation
