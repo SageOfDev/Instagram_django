@@ -3,4 +3,3 @@ secrets.json
 db.sqlite3
 *.pyc
 __pycache__
-my_settings.py
